@@ -1,39 +1,50 @@
-document.getElementById('login-form').addEventListener('submit', function(e) {
-    e.preventDefault();
+// GitHub Repo Games
+const games = [
+    { title: "Candy Crush Math", emoji: "🍭", link: "candy-crush-math.html" },
+    { title: "Number Guesser", emoji: "🔢", link: "number-guesser.html" },
+    // Add more games here
+];
 
-    const username = document.getElementById('id_username').value.trim();
-    const passwordGroup = document.getElementById('password-group');
-    const submitBtn = document.getElementById('submit-btn');
+function createGameCard(game) {
+    const card = document.createElement('div');
+    card.className = 'game-card';
+    card.innerHTML = `
+        <div style="height:180px; background:#21262d; display:flex; align-items:center; justify-content:center; font-size:60px;">
+            ${game.emoji}
+        </div>
+        <div style="padding:16px;">
+            <h3 style="color:#58a6ff;">${game.title}</h3>
+            <a href="${game.link}" style="color:#1ABC9C; text-decoration:none;">Play →</a>
+        </div>
+    `;
+    return card;
+}
 
-    if (passwordGroup.style.display === 'none') {
-        // First step: Continue
+const grid = document.getElementById('games-grid');
+if (grid) {
+    games.forEach(game => grid.appendChild(createGameCard(game)));
+}
+
+// Login Form Logic
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('id_username').value.trim();
+
         if (username === '4567') {
-            // SECRET CODE: Load games iframe
             document.querySelector('.login-page').style.display = 'none';
             document.getElementById('game-iframe-container').style.display = 'block';
-            
-            // Change this URL to your actual games repo / index.html
-            document.getElementById('game-iframe').src = "https://your-username.github.io/your-games-repo/";
-            // Or local: "games/index.html" if you put the other repo inside this folder
+            document.getElementById('game-iframe').src = "https://your-username.github.io/your-games-repo/";   // ← CHANGE THIS
         } else {
-            // Normal flow
+            const passwordGroup = document.getElementById('password-group');
             passwordGroup.style.display = 'block';
             document.getElementById('id_username').readOnly = true;
-            submitBtn.textContent = 'Log in';
-            document.getElementById('id_password').focus();
+            document.getElementById('submit-btn').textContent = 'Log in';
         }
-    } else {
-        // Password entered - fake success
-        alert("✅ Login successful! (Demo)");
-    }
-});
+    });
+}
 
 function backToLogin() {
-    document.getElementById('game-iframe-container').style.display = 'none';
-    document.querySelector('.login-page').style.display = 'flex';
-    // Reset form
-    document.getElementById('login-form').reset();
-    document.getElementById('password-group').style.display = 'none';
-    document.getElementById('id_username').readOnly = false;
-    document.getElementById('submit-btn').textContent = 'Continue';
+    location.reload();
 }
