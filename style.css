@@ -1,8 +1,11 @@
 :root {
     --primary: #1ABC9C;
+    --github-dark: #0d1117;
+    --github-bg: #161b22;
+    --github-border: #30363d;
 }
 
-* { box-sizing: border-box; }
+/* Login Styles */
 body {
     font-family: "Proxima Nova", system-ui, sans-serif;
     margin: 0;
@@ -46,7 +49,6 @@ body {
     text-align: center;
     font-size: 32px;
     margin-bottom: 30px;
-    color: #2c3e50;
 }
 
 .form {
@@ -65,18 +67,11 @@ body {
     margin-bottom: 15px;
 }
 
-.form-control:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(26,188,156,0.15);
-    outline: none;
-}
-
 .btn {
     width: 100%;
     padding: 16px;
     font-size: 18px;
     font-weight: 600;
-    text-transform: uppercase;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -84,32 +79,60 @@ body {
     color: white;
 }
 
-.btn:hover {
-    background: #16a085;
-}
-
-.row {
+/* GitHub Repo Styles */
+.header-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 24px;
+    background: #161b22;
+    color: #c9d1d9;
     display: flex;
-    margin: 10px 0;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #30363d;
 }
 
-.col-xs-6 {
-    flex: 1;
+.logo {
+    color: white;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.text-right { text-align: right; }
-
-.forgot-pw, .clever-login {
-    color: var(--primary);
+.nav-links a {
+    color: #c9d1d9;
+    margin-left: 20px;
     text-decoration: none;
 }
 
-.clever-login {
-    display: block;
-    background: #1a73e8;
-    color: white;
+.repo-header {
+    background: #161b22;
+    border: 1px solid #30363d;
     padding: 16px;
-    text-align: center;
     border-radius: 6px;
-    font-weight: 600;
+    margin: 30px 0;
+    color: #c9d1d9;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.game-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.game-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
 }
