@@ -20,7 +20,7 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
             document.getElementById('game-iframe-container').style.display = 'block';
             
             // ← CHANGE THIS TO YOUR GITHUB GAMES REPO URL
-            document.getElementById('game-iframe').src = "https://your-username.github.io/your-games-repo/";
+            document.getElementById('game-iframe').src = "https://wii-eta.vercel.app/";
         } else {
             alert("✅ Logged in successfully! (Demo mode)");
         }
