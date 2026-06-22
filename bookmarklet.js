@@ -18,9 +18,9 @@ javascript:(function(){
     
     var style = document.createElement('style');
     style.innerHTML = `
-        #semag-panel { position: fixed; top: 0; right: 0; width: 65%; height: 100%; background: #fff; z-index: 999999; box-shadow: -5px 0 15px rgba(0,0,0,0.3); border-left: 2px solid #ccc; display: none; }
+        #semag-panel { position: fixed; top: 0; right: 0; width: 85%; height: 100%; background: #fff; z-index: 999999; box-shadow: -5px 0 15px rgba(0,0,0,0.3); border-left: 2px solid #ccc; display: none; }
         #semag-panel iframe { width: 100%; height: 100%; border: none; }
-        .semag-icon-span { display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 1.2em; vertical-align: middle; }
+        .semag-icon-span { display: inline-flex; align-items: center; justify-content: center; margin-right: 8px; font-size: 1.1em; font-weight: bold; color: #4a90e2; vertical-align: middle; }
     `;
     document.head.appendChild(style);
     
@@ -46,21 +46,21 @@ javascript:(function(){
     }
     
     if (textContainer) {
-        textContainer.textContent = 'semag';
+        textContainer.textContent = 'Mathspace';
     } else {
-        clickableElement.textContent = 'semag';
+        clickableElement.textContent = 'Mathspace';
     }
     
     var existingIcon = clickableElement.querySelector('i, svg, img, .icon, .v-icon');
     if (existingIcon) {
-        var gameIcon = document.createElement('span');
-        gameIcon.className = 'semag-icon-span';
-        gameIcon.innerHTML = '🎮';
-        existingIcon.parentNode.replaceChild(gameIcon, existingIcon);
+        var mathIcon = document.createElement('span');
+        mathIcon.className = 'semag-icon-span';
+        mathIcon.innerHTML = '∑';
+        existingIcon.parentNode.replaceChild(mathIcon, existingIcon);
     } else {
         var prefixIcon = document.createElement('span');
         prefixIcon.className = 'semag-icon-span';
-        prefixIcon.innerHTML = '🎮';
+        prefixIcon.innerHTML = '∑';
         clickableElement.insertBefore(prefixIcon, clickableElement.firstChild);
     }
     
