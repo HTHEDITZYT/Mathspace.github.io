@@ -1,125 +1,157 @@
 javascript:(function(){
-    if(document.getElementById('wii-eta-container')){
-        var c = document.getElementById('wii-eta-container');
-        c.style.display = (c.style.display === 'none') ? 'block' : 'none';
-        return;
+  // Wii ETA Helper Bookmarklet for Education Perfect
+  // Creates a draggable floating panel with iframe
+  
+  const PANEL_ID = 'wii-eta-panel';
+  const BUTTON_ID = 'wii-eta-nav-btn';
+  const HEADER_COLOR = '#182552';
+  const IFRAME_URL = 'https://wii-eta.vercel.app/';
+  
+  // Check if panel already exists (toggle off)
+  if (document.getElementById(PANEL_ID)) {
+    document.getElementById(PANEL_ID).remove();
+    const btn = document.getElementById(BUTTON_ID);
+    if (btn) btn.remove();
+    return;
+  }
+  
+  // Create floating panel container
+  const panel = document.createElement('div');
+  panel.id = PANEL_ID;
+  panel.style.cssText = `
+    position: fixed;
+    width: 480px;
+    height: 640px;
+    top: 50px;
+    right: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  `;
+  
+  // Responsive sizing for mobile
+  if (window.innerWidth < 768) {
+    panel.style.width = 'calc(100vw - 20px)';
+    panel.style.height = '70vh';
+    panel.style.right = '10px';
+    panel.style.left = '10px';
+  }
+  
+  // Header
+  const header = document.createElement('div');
+  header.style.cssText = `
+    background-color: ${HEADER_COLOR};
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    user-select: none;
+    border-radius: 8px 8px 0 0;
+    touch-action: none;
+  `;
+  header.innerHTML = '<span style="font-weight: 600; font-size: 14px;">Wii ETA Helper</span><button style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">✕</button>';
+  
+  // Close button
+  header.querySelector('button').addEventListener('click', function(e) {
+    e.stopPropagation();
+    panel.remove();
+    const btn = document.getElementById(BUTTON_ID);
+    if (btn) btn.remove();
+  });
+  
+  // iframe
+  const iframe = document.createElement('iframe');
+  iframe.src = IFRAME_URL;
+  iframe.style.cssText = `
+    flex: 1;
+    border: none;
+    border-radius: 0 0 8px 8px;
+    background: white;
+  `;
+  iframe.allow = 'clipboard-read; clipboard-write';
+  
+  panel.appendChild(header);
+  panel.appendChild(iframe);
+  document.body.appendChild(panel);
+  
+  // Dragging functionality (mouse + touch)
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
+  
+  function startDrag(e) {
+    isDragging = true;
+    const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+    const rect = panel.getBoundingClientRect();
+    offsetX = clientX - rect.left;
+    offsetY = clientY - rect.top;
+  }
+  
+  function moveDrag(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+    panel.style.left = (clientX - offsetX) + 'px';
+    panel.style.top = (clientY - offsetY) + 'px';
+    panel.style.right = 'auto';
+    panel.style.bottom = 'auto';
+  }
+  
+  function endDrag() {
+    isDragging = false;
+  }
+  
+  header.addEventListener('mousedown', startDrag);
+  header.addEventListener('touchstart', startDrag);
+  document.addEventListener('mousemove', moveDrag);
+  document.addEventListener('touchmove', moveDrag, {passive: false});
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+  
+  // Try to inject button into navbar (Education Perfect specific)
+  setTimeout(function() {
+    try {
+      // Look for notification bell or nav icons
+      const navContainer = document.querySelector('[role="navigation"]') || 
+                          document.querySelector('.navbar') ||
+                          document.querySelector('nav') ||
+                          document.querySelector('[class*="nav"]');
+      
+      if (navContainer) {
+        const btn = document.createElement('button');
+        btn.id = BUTTON_ID;
+        btn.style.cssText = `
+          background: ${HEADER_COLOR};
+          color: white;
+          border: none;
+          padding: 8px 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 12px;
+          font-weight: 600;
+          margin: 0 8px;
+          transition: opacity 0.2s;
+        `;
+        btn.textContent = '⚡ Wii ETA';
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const pnl = document.getElementById(PANEL_ID);
+          pnl.style.display = pnl.style.display === 'none' ? 'flex' : 'none';
+        });
+        
+        // Try to insert near the end of nav (before profile menu)
+        navContainer.appendChild(btn);
+      }
+    } catch (e) {
+      // Silently fail if nav injection doesn't work
     }
-
-    var style = document.createElement('style');
-    style.innerHTML = `
-        #wii-eta-container {
-            position: fixed !important;
-            bottom: 15px !important;
-            left: 15px !important;
-            width: 460px !important;
-            height: 620px !important;
-            background: white !important;
-            border: 4px solid #182552 !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
-            z-index: 99999999 !important;
-            overflow: hidden !important;
-            display: block !important;
-        }
-        #wii-eta-header {
-            background: #182552 !important;
-            color: white !important;
-            padding: 12px !important;
-            font-weight: bold !important;
-            text-align: center !important;
-            cursor: move !important;
-            font-size: 16px !important;
-        }
-        #wii-eta-iframe {
-            width: 100% !important;
-            height: calc(100% - 48px) !important;
-            border: none !important;
-        }
-    `;
-    document.head.appendChild(style);
-
-    var container = document.createElement('div');
-    container.id = 'wii-eta-container';
-
-    var header = document.createElement('div');
-    header.id = 'wii-eta-header';
-    header.innerHTML = 'Wii ETA Helper <span style="float:right; cursor:pointer; font-size:22px;" onclick="document.getElementById(\'wii-eta-container\').style.display=\'none\'">✕</span>';
-    container.appendChild(header);
-
-    var iframe = document.createElement('iframe');
-    iframe.id = 'wii-eta-iframe';
-    iframe.src = 'https://wii-eta.vercel.app/';
-    container.appendChild(iframe);
-
-    document.body.appendChild(container);
-
-    // Draggable (touch + mouse support for iPad)
-    let dragging = false, startX, startY;
-    header.addEventListener('mousedown', startDrag);
-    header.addEventListener('touchstart', startDrag);
-
-    function startDrag(e) {
-        dragging = true;
-        const touch = e.touches ? e.touches[0] : e;
-        startX = touch.clientX - container.offsetLeft;
-        startY = touch.clientY - container.offsetTop;
-    }
-
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('touchmove', drag);
-    document.addEventListener('mouseup', () => dragging = false);
-    document.addEventListener('touchend', () => dragging = false);
-
-    function drag(e) {
-        if (!dragging) return;
-        const touch = e.touches ? e.touches[0] : e;
-        container.style.left = (touch.clientX - startX) + 'px';
-        container.style.top = (touch.clientY - startY) + 'px';
-        container.style.bottom = 'auto';
-    }
-
-    // === Attach to Notification Bell ===
-    function attachToNotification() {
-        // Common selectors for notification bell on EP
-        const selectors = [
-            'button[aria-label*="notification"]', 
-            '.notification-bell', 
-            'i.fa-bell', 
-            '[data-testid*="notification"]',
-            'svg path[d*="bell"]',
-            '.top-bar button',
-            'header button'
-        ];
-
-        for (let sel of selectors) {
-            let bells = document.querySelectorAll(sel);
-            for (let bell of bells) {
-                if (bell.textContent.includes('🛎') || bell.innerHTML.includes('bell')) {
-                    bell.onclick = null;
-                    bell.addEventListener('click', function(e){
-                        e.stopImmediatePropagation();
-                        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
-                    });
-                    return true;
-                }
-            }
-        }
-
-        // Fallback: try to find any top right icon
-        const topButtons = document.querySelectorAll('header button, .top-bar button, nav button');
-        if (topButtons.length > 0) {
-            const likelyBell = topButtons[topButtons.length - 1];
-            likelyBell.addEventListener('click', function(e){
-                e.stopImmediatePropagation();
-                container.style.display = (container.style.display === 'none') ? 'block' : 'none';
-            });
-        }
-    }
-
-    // Run attachment
-    setTimeout(attachToNotification, 800);
-    setTimeout(attachToNotification, 2000); // try again
-
-    // Show initially
-    container.style.display = 'block';
+  }, 100);
 })();
