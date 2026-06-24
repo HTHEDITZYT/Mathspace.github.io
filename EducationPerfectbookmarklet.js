@@ -1,1 +1,298 @@
-javascript:(function(){if(window.location.hostname!=='app.educationperfect.com'){alert('This bookmarklet only works on Education Perfect');return;}if(document.getElementById('wii-eta-panel'))return;var style=document.createElement('style');style.innerHTML=`#wii-eta-panel{position:fixed;top:84px;left:50%;transform:translateX(-50%);width:70%;height:calc(100vh-84px);background:rgba(255,255,255,0.7);backdrop-filter:blur(10px);z-index:999999;display:none;overflow:hidden;border:1px solid rgba(255,255,255,0.3);border-radius:12px}#wii-eta-frame{width:100%;height:100%;border:none}#zoom-controls{position:absolute;bottom:30px;right:30px;display:flex;gap:12px;z-index:1000;background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);padding:12px;border-radius:50px;border:1px solid rgba(255,255,255,0.5);box-shadow:0 8px 32px rgba(0,0,0,0.1)}.zoom-btn{width:45px;height:45px;border:none;border-radius:50%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.2s,box-shadow 0.2s}.zoom-btn:active{transform:scale(0.95);box-shadow:0 4px 12px rgba(102,126,234,0.4)}.zoom-display{display:flex;align-items:center;justify-content:center;min-width:50px;font-weight:600;color:#333;font-size:14px}`;document.head.appendChild(style);var panel=document.createElement('div');panel.id='wii-eta-panel';var frameContainer=document.createElement('div');frameContainer.style.cssText='width:100%;height:100%;overflow:auto;display:flex;align-items:center;justify-content:center;position:relative';var frame=document.createElement('iframe');frame.id='wii-eta-frame';frame.src='https://wii-eta.vercel.app/';var zoomLevel=100;frameContainer.appendChild(frame);var controls=document.createElement('div');controls.id='zoom-controls';controls.innerHTML=`<button class="zoom-btn" id="zoom-out">−</button><div class="zoom-display" id="zoom-display">100%</div><button class="zoom-btn" id="zoom-in">+</button>`;frameContainer.appendChild(controls);panel.appendChild(frameContainer);document.body.appendChild(panel);function updateZoom(){frame.style.transform='scale('+zoomLevel/100+')';document.getElementById('zoom-display').textContent=zoomLevel+'%'}document.getElementById('zoom-out').addEventListener('click',function(){if(zoomLevel>60){zoomLevel-=10;updateZoom()}});document.getElementById('zoom-in').addEventListener('click',function(){if(zoomLevel<150){zoomLevel+=10;updateZoom()}});document.addEventListener('keydown',function(e){if(e.key==='-'||e.key==='_'){if(zoomLevel>60){zoomLevel-=10;updateZoom()}}if(e.key==='+'||e.key==='='){if(zoomLevel<150){zoomLevel+=10;updateZoom()}}});var notifBtn=document.querySelector('button[aria-label*="Notification"],button[aria-label*="notification"],[data-testid="notification"],span[class*="notification"]');if(notifBtn){notifBtn.addEventListener('click',function(){panel.style.display=panel.style.display==='block'?'none':'block'});}else{var allButtons=document.querySelectorAll('button');for(var i=0;i<allButtons.length;i++){if(allButtons[i].innerHTML.includes('🔔')||allButtons[i].textContent.includes('notification')){allButtons[i].addEventListener('click',function(){panel.style.display=panel.style.display==='block'?'none':'block'});break;}}}})();
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OctoArcade — GitHub Games</title>
+  <style>
+    :root {
+      --github-dark: #0d1117;
+      --github-bg: #161b22;
+      --github-border: #30363d;
+      --github-green: #238636;
+      --text-light: #c9d1d9;
+      --muted: #8b949e;
+      --card: #21262d;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin:0; padding:0; font-family: system-ui, sans-serif; background: var(--github-dark); color: var(--text-light); }
+    body { display: flex; flex-direction: column; }
+    body.fullscreen-mode { overflow: hidden; }
+
+    header {
+      background: var(--github-bg); border-bottom: 1px solid var(--github-border);
+      padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+    .octo-logo { width: 42px; height: 42px; background: #fff; border-radius: 50%; display: grid; place-items: center; font-size: 28px; }
+
+    .search-hero { display: flex; background: var(--github-bg); border: 1px solid var(--github-border); border-radius: 6px; padding: 6px; min-width: 380px; }
+    .search-input { background: transparent; border: none; color: var(--text-light); padding: 8px 12px; flex: 1; outline: none; }
+    .search-btn { background: var(--github-green); color: white; border: none; padding: 8px 18px; border-radius: 5px; cursor: pointer; }
+
+    main { flex: 1; padding: 24px; overflow: auto; }
+    main.fullscreen-mode { padding: 0; }
+    .container { max-width: 1280px; margin: 0 auto; }
+
+    .hero { background: var(--card); border: 1px solid var(--github-border); border-radius: 12px; padding: 32px; margin-bottom: 32px; }
+    .cats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+
+    .chip {
+      background: var(--github-bg); color: var(--muted); border: 1px solid var(--github-border);
+      padding: 6px 14px; border-radius: 9999px; cursor: pointer;
+    }
+    .chip.active, .chip:hover { background: var(--github-green); color: white; }
+
+    .theater {
+      margin-bottom: 30px; background: #000; border-radius: 12px; overflow: hidden;
+      aspect-ratio: 16/9; border: 1px solid var(--github-border); position: relative;
+    }
+    .theater.fullscreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; aspect-ratio: unset; border-radius: 0; margin: 0; z-index: 9999; }
+    .theater iframe { width: 100%; height: 100%; border: none; }
+
+    .overlay {
+      position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9));
+      padding: 15px 20px; opacity: 0; transition: opacity 0.3s; display: flex; justify-content: space-between; align-items: center;
+      z-index: 10;
+    }
+    .theater:hover .overlay { opacity: 1; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--github-border); border-radius: 10px;
+      overflow: hidden; cursor: pointer; transition: all 0.25s; height: 260px;
+    }
+    .card:hover { transform: translateY(-8px); border-color: var(--github-green); }
+    .card .thumb { height: 170px; position: relative; overflow: hidden; }
+    .card img { width: 100%; height: 100%; object-fit: cover; }
+    .play-overlay {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 60px; height: 60px; background: rgba(35,134,54,0.95); border-radius: 50%;
+      display: grid; place-items: center; font-size: 28px; opacity: 0; color: white;
+    }
+    .card:hover .play-overlay { opacity: 1; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="#" class="brand">
+      <div class="octo-logo">🐙</div>
+      <div><h1>OctoArcade</h1><p>GitHub Gaming</p></div>
+    </a>
+    <div style="display:flex; gap:12px; align-items:center">
+      <div class="search-hero">
+        <input id="search" class="search-input" placeholder="Search games..." />
+        <button id="searchBtn" class="search-btn">Search</button>
+      </div>
+      <button id="refreshBtn" style="padding:8px 16px; background:#238636; color:white; border:none; border-radius:6px; cursor:pointer;">↻ Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="hero">
+        <div>
+          <h2>Play Games from GitHub</h2>
+          <p>Bookmarklet friendly version</p>
+          <div class="cats" id="categories"></div>
+        </div>
+      </div>
+
+      <div class="theater" id="theater">
+        <iframe id="player" allowfullscreen></iframe>
+        <div class="overlay">
+          <div>
+            <div id="current-title" style="font-size:1.35rem; font-weight:700;"></div>
+            <div id="current-sub" style="color:var(--muted); font-size:0.9rem;"></div>
+          </div>
+          <button id="fsBtn" style="padding:10px 22px; background:var(--github-green); color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600;">
+            ⛶ Fullscreen
+          </button>
+        </div>
+      </div>
+
+      <h3>Available Games</h3>
+      <div id="grid" class="grid"></div>
+    </div>
+  </main>
+
+  <script>
+    const OWNER = 'CalcSolver';
+    const REPO = 'Wii';
+    
+    const RAW_BASE = `https://${OWNER.toLowerCase()}.github.io/${REPO}`;
+    const ICON_BASE = `${RAW_BASE}/Icon`;
+
+    let games = [];
+    let filtered = [];
+    let activeCategory = null;
+    let searchTerm = '';
+    let currentGame = null;
+
+    const searchInput = document.getElementById('search');
+    const gridEl = document.getElementById('grid');
+    const categoriesEl = document.getElementById('categories');
+    const player = document.getElementById('player');
+    const currentTitle = document.getElementById('current-title');
+    const currentSub = document.getElementById('current-sub');
+    const theater = document.getElementById('theater');
+
+    async function getIconUrl(file) {
+      const baseName = file.replace(/\.html?$/i, '');
+      try {
+        const res = await fetch(`${ICON_BASE}/${baseName}.icon`);
+        if (res.ok) {
+          let content = await res.text();
+          content = content.trim();
+          if (content.startsWith('data:image') || content.startsWith('http')) return content;
+        }
+      } catch (e) {}
+      return 'https://picsum.photos/id/180/300/200';
+    }
+
+    async function makeCard(game) {
+      const imgSrc = await getIconUrl(game.file);
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="thumb">
+          <img src="${imgSrc}" alt="${game.title}" onerror="this.src='https://picsum.photos/id/180/300/200'">
+          <div class="play-overlay">▶</div>
+        </div>
+        <div style="padding:14px">
+          <div style="font-weight:600">${game.title}</div>
+          <div style="color:var(--muted);font-size:0.85rem">${game.categories.join(', ')}</div>
+        </div>
+      `;
+      card.onclick = (e) => {
+        e.stopImmediatePropagation();
+        loadGame(game);
+      };
+      return card;
+    }
+
+    function loadGame(game) {
+      if (!game) return;
+      currentGame = game;
+      currentTitle.textContent = game.title;
+      currentSub.textContent = game.file;
+      
+      player.src = ''; 
+      setTimeout(() => {
+        player.src = `${RAW_BASE}/${game.file}`;
+      }, 10);
+    }
+
+    async function discoverGames() {
+      gridEl.innerHTML = '<div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--muted);">Loading games...</div>';
+
+      try {
+        let allFiles = [];
+        let page = 1;
+        let hasMore = true;
+
+        while (hasMore) {
+          const res = await fetch(
+            `https://api.github.com/repos/${OWNER}/${REPO}/contents/?page=${page}&per_page=100`,
+            { cache: 'no-store' }
+          );
+          
+          if (!res.ok) throw new Error('API failed');
+          
+          const items = await res.json();
+          if (items.length === 0) {
+            hasMore = false;
+          } else {
+            allFiles = allFiles.concat(items);
+            page++;
+          }
+        }
+
+        games = allFiles
+          .filter(i => i.type === 'file' && /\.html?$/i.test(i.name) && i.name !== 'index.html')
+          .map(i => ({
+            title: i.name.replace(/\.html?$/i, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+            file: i.name,
+            categories: inferCategories(i.name)
+          }));
+
+        console.log(`Found ${games.length} games`);
+
+      } catch (e) {
+        console.error('Fetch error:', e);
+        games = [];
+      }
+
+      filtered = [...games];
+      renderCategories();
+      await renderGrid();
+      
+      if (games.length && !currentGame) loadGame(games[0]);
+    }
+
+    function inferCategories(name) {
+      const n = name.toLowerCase();
+      if (/bloxorz|amongus|attackhole|adocar|gunspin|slope|pacman|1942|cloudmoon|backrooms|fnaf|granny/.test(n)) return ["Arcade"];
+      return ["Classic"];
+    }
+
+    function renderCategories() {
+      categoriesEl.innerHTML = '';
+      const all = document.createElement('div');
+      all.className = `chip ${activeCategory===null ? 'active' : ''}`;
+      all.textContent = `All (${games.length})`;
+      all.onclick = () => { activeCategory = null; renderCategories(); applyFilters(); };
+      categoriesEl.appendChild(all);
+
+      const catSet = new Set(games.flatMap(g => g.categories));
+      catSet.forEach(cat => {
+        const el = document.createElement('div');
+        el.className = `chip ${activeCategory===cat ? 'active' : ''}`;
+        el.textContent = cat;
+        el.onclick = () => {
+          activeCategory = activeCategory === cat ? null : cat;
+          renderCategories();
+          applyFilters();
+        };
+        categoriesEl.appendChild(el);
+      });
+    }
+
+    async function renderGrid() {
+      gridEl.innerHTML = '';
+      for (const game of filtered) {
+        const card = await makeCard(game);
+        gridEl.appendChild(card);
+      }
+    }
+
+    function applyFilters() {
+      const term = searchTerm.toLowerCase();
+      filtered = games.filter(g => {
+        if (activeCategory && !g.categories.includes(activeCategory)) return false;
+        return !term || g.title.toLowerCase().includes(term) || g.file.toLowerCase().includes(term);
+      });
+      renderGrid();
+    }
+
+    searchInput.addEventListener('input', () => { searchTerm = searchInput.value; applyFilters(); });
+    document.getElementById('searchBtn').addEventListener('click', applyFilters);
+    document.getElementById('refreshBtn').addEventListener('click', discoverGames);
+
+    document.getElementById('fsBtn').addEventListener('click', () => {
+      theater.classList.toggle('fullscreen');
+      document.body.classList.toggle('fullscreen-mode');
+      document.querySelector('main').classList.toggle('fullscreen-mode');
+    });
+
+    document.documentElement.style.setProperty('--safe', '1');
+
+    discoverGames();
+  </script>
+</body>
+</html>
