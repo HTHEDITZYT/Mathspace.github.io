@@ -166,7 +166,7 @@ javascript:(function(){
         if(e) e.preventDefault();
         document.getElementById('login-interface').style.display = 'none';
         document.getElementById('game-iframe-container').style.display = 'block';
-        document.getElementById('game-iframe').src = 'https://wii-eta.vercel.app';
+        document.getElementById('game-iframe').src = 'https://2604moon.firebaseapp.com';
     }
 </script>
 </body>
