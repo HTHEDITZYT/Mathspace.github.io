@@ -1,134 +1,66 @@
 javascript:(function(){
-    // Prevent duplicates
-    if(document.getElementById('wii-eta-custom-item')) {
-        toggleWiiPanel();
+    if(document.getElementById('wii-eta-iframe-container')) {
+        var c = document.getElementById('wii-eta-iframe-container');
+        c.style.display = (c.style.display === 'none') ? 'block' : 'none';
         return;
     }
 
     var style = document.createElement('style');
     style.innerHTML = `
-        #wii-eta-panel { 
-            position: fixed; 
-            top: 80px; 
-            right: 30px; 
-            width: 480px; 
-            height: 640px; 
-            background: #fff; 
-            z-index: 9999999; 
-            box-shadow: -10px 0 30px rgba(0,0,0,0.4); 
-            border: 4px solid #182552; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            display: none;
+        #wii-eta-iframe-container {
+            margin: 20px auto;
+            max-width: 520px;
+            border: 4px solid #182552;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: white;
+            z-index: 99999;
         }
         #wii-eta-header {
             background: #182552;
             color: white;
-            padding: 12px 16px;
-            font-family: system-ui, sans-serif;
-            font-size: 16px;
-            font-weight: 700;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: move;
         }
-        #wii-eta-iframe { 
-            width: 100%; 
-            height: calc(100% - 48px); 
-            border: none; 
+        #wii-eta-iframe {
+            width: 100%;
+            height: 580px;
+            border: none;
         }
-        .wii-close { cursor: pointer; font-size: 22px; line-height: 1; }
     `;
     document.head.appendChild(style);
 
-    // Create floating panel
-    var panel = document.createElement('div');
-    panel.id = 'wii-eta-panel';
+    // Find "You" section (common in EP quiz pages)
+    var youElements = Array.from(document.querySelectorAll('div, span, h1, h2, button, a'))
+        .filter(el => el.textContent.trim() === 'You' || 
+                     el.textContent.trim().includes('You') && el.textContent.length < 30);
+
+    var target = youElements[0] || document.querySelector('.student-name, .profile, .header, .top-bar');
+
+    var container = document.createElement('div');
+    container.id = 'wii-eta-iframe-container';
 
     var header = document.createElement('div');
     header.id = 'wii-eta-header';
-    header.innerHTML = `Wii ETA Helper <span class="wii-close">✕</span>`;
-    panel.appendChild(header);
+    header.innerHTML = `Wii ETA Helper <span onclick="this.closest('#wii-eta-iframe-container').style.display='none'" style="cursor:pointer;font-size:20px;">✕</span>`;
+    container.appendChild(header);
 
     var iframe = document.createElement('iframe');
     iframe.id = 'wii-eta-iframe';
     iframe.src = 'https://wii-eta.vercel.app/';
-    panel.appendChild(iframe);
+    container.appendChild(iframe);
 
-    document.body.appendChild(panel);
-
-    // Draggable
-    let isDragging = false, offsetX, offsetY;
-    header.addEventListener('mousedown', e => {
-        if(e.target.classList.contains('wii-close')) return;
-        isDragging = true;
-        offsetX = e.clientX - panel.getBoundingClientRect().left;
-        offsetY = e.clientY - panel.getBoundingClientRect().top;
-    });
-    document.addEventListener('mousemove', e => {
-        if(!isDragging) return;
-        panel.style.left = (e.clientX - offsetX) + 'px';
-        panel.style.top = (e.clientY - offsetY) + 'px';
-        panel.style.right = 'auto';
-    });
-    document.addEventListener('mouseup', () => isDragging = false);
-
-    // Close button
-    header.querySelector('.wii-close').addEventListener('click', () => {
-        panel.style.display = 'none';
-    });
-
-    function toggleWiiPanel() {
-        panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+    if (target && target.parentNode) {
+        target.parentNode.insertBefore(container, target.nextSibling);
+    } else {
+        document.body.appendChild(container);
     }
 
-    // === Inject menu item (like SEQTA) ===
-    var targetText = ['timetable', 'schedule', 'home', 'dashboard', 'classes']; // common EP nav words
-    var navLinks = document.querySelectorAll('a, li, div[role="menuitem"], .nav-item, .menu-item, span');
-    var targetEl = null;
-
-    for (var i = 0; i < navLinks.length; i++) {
-        var text = navLinks[i].textContent.trim().toLowerCase();
-        if (targetText.some(t => text.includes(t))) {
-            targetEl = navLinks[i].closest('li') || navLinks[i].parentElement || navLinks[i];
-            break;
-        }
-    }
-
-    if (!targetEl) targetEl = document.querySelector('nav, .sidebar, .menu, .navigation') || document.body;
-
-    var newItem = targetEl.cloneNode(true);
-    newItem.id = 'wii-eta-custom-item';
-
-    // Clean and rename
-    var link = newItem.querySelector('a') || newItem;
-    link.href = '#';
-    link.style.cursor = 'pointer';
-
-    // Change text to "Wii ETA"
-    var textNode = Array.from(link.childNodes).find(n => n.nodeType === 3);
-    if (textNode) textNode.textContent = 'Wii ETA';
-    else link.textContent = 'Wii ETA';
-
-    // Add icon (optional)
-    var icon = document.createElement('span');
-    icon.style.marginRight = '8px';
-    icon.innerHTML = '🎮';
-    link.insertBefore(icon, link.firstChild);
-
-    // Insert after original item
-    if (targetEl.parentNode) {
-        targetEl.parentNode.insertBefore(newItem, targetEl.nextSibling);
-    }
-
-    // Click handler
-    newItem.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        toggleWiiPanel();
-    });
-
-    // Show panel immediately first time
-    setTimeout(() => { panel.style.display = 'block'; }, 800);
+    // Auto open
+    container.style.display = 'block';
 })();
